@@ -7,20 +7,30 @@ import CardLink from '../../components/CardLink/CardLink';
 import firebase from '../../utils/firebase';
 
 function FrontEnd() {
+  const allFrontEndArray = [];
   const [link, setLink] = useState([]);
-  useEffect(() => {
+
+  const firebaseRequisition = (collectionP, arrayP, setP) => {
     firebase
       .firestore()
-      .collection('front-end')
+      .collection(collectionP)
       .get()
-      .then((querySnapshot) => {
-        let links = [];
-        querySnapshot.forEach((doc) => {
-          links.push(doc.data());
-        });
-        setLink(links);
+      .then(async (result) => {
+        await result.docs.forEach((doc) =>
+          arrayP.push({
+            id: doc.id,
+            ...doc.data(),
+          })
+        );
+        setP(arrayP);
       });
-  }, []);
+  };
+  
+  useEffect(() => {
+    firebaseRequisition('front-end', allFrontEndArray, setLink)
+  }, [allFrontEndArray]);
+
+  
   return (
     <>
       <Header />
